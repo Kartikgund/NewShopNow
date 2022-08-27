@@ -1,0 +1,90 @@
+﻿@using System.Data
+@model DataSet
+@{
+    ViewBag.Title = "ListCustomer";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="content-wrapper">
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="fw-bold py-3 mb-4">Multiple table List using Data Adapter</h4>
+
+        <!-- Basic Bootstrap Table -->
+        <div class="card">
+            <h5 class="card-header">Customers</h5>
+            <div class="table-responsive text-nowrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th> ID</th>
+                            <th> Name</th>
+                            <th>Mobile No</th>
+                            <th>Created by</th>
+                            <th>Created Date</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+
+                        @foreach (DataRow row in Model.Tables[0].Rows)
+                        {
+                            <tr>
+                                <td>@row["Id"]</td>
+                                <td>@row["CustomerName"]</td>
+                                <td>@row["MobileNo"]</td>
+                                <td>@row["CreatedBy"]</td>
+                                <td>@row["CreatedDate"]</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="content-wrapper">
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y">
+       
+        <!-- Basic Bootstrap Table -->
+        <div class="card">
+            <h5 class="card-header">Products</h5>
+            <div class="table-responsive text-nowrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Product ID</th>
+                            <th>Product Name</th>
+                            <th>Quantity</th>
+                            <th>Base Price</th>
+                            <th>Selling Price</th>
+                            <th>Discount</th>
+                            <th>Created By</th>
+
+                        </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+
+                        @foreach (DataRow row in Model.Tables[1].Rows)
+                        {
+                            <tr>
+                                <td>@row["Id"]</td>
+                                <td>@row["ProductName"]</td>
+                                <td>@row["ProductQty"]</td>
+                                <td>@row["BasePrice"]</td>
+                                <td>@row["SellingPrice"]</td>
+                                <td>@row["Discount"]</td>
+                                <td>@row["CreatedBy"]</td>
+                               
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

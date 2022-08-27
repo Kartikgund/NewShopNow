@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<StudentDetails>
+  <tblStudent>
+    <ID>102</ID>
+    <Name>Nimit</Name>
+    <Course>MCA</Course>
+    <College>Abes</College>
+  </tblStudent>
+  <tblStudent>
+    <ID>101</ID>
+    <Name>Amit Trivedi</Name>
+    <Course>MCA</Course>
+    <College>Skyline</College>
+  </tblStudent>
+  <tblStudent>
+    <ID>103</ID>
+    <Name>Parth</Name>
+    <Course>B-Tech</Course>
+    <College>PVPIT</College>
+  </tblStudent>
+  <tblStudent>
+    <ID>104</ID>
+    <Name>Tejas</Name>
+    <Course>M-Tech</Course>
+    <College>Tssm</College>
+  </tblStudent>
+</StudentDetails>

@@ -1,0 +1,71 @@
+﻿@using NewShopNowBL2.Models
+@model List<tblStore>
+
+@{
+    ViewBag.Title = "ListStore";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="content-wrapper">
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="fw-bold py-3 mb-4">Store List</h4>
+        @Html.ActionLink("Add Store", "AddStore", "Store", null, new { @class = "btn btn-primary" })
+        <br /><br />
+        <!-- Basic Bootstrap Table -->
+        <div class="card">
+            <h5 class="card-header">Stores</h5>
+            <div class="table-responsive text-nowrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Store ID</th>
+                            <th>Store Name</th>
+                            <th>Address</th>
+                            <th>City</th>
+                            <th>Contact No</th>
+                            <th>Started Date</th>
+                            <th>Created By</th>
+                            <th>Created Date</th>
+                 
+                            <th>Action</th>
+
+                        </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+
+                        @foreach (var item in Model)
+                        {
+                        <tr>
+                            <td>@item.Id</td>
+                            <td>@item.StoreName</td>
+                            <td>@item.Address</td>
+                            <td>@item.City</td>
+                            <td>@item.ContactNo</td>
+                            <td>@item.StartedDate</td>
+                            <td>@item.CreatedBy</td>
+                            <td>@item.CreatedDate</td>
+                            <td>
+                                <div class="dropdown">
+                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                        <i class="bx bx-dots-vertical-rounded"></i>
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="/Store/Details/@item.Id"><i class="bx bx-edit-alt me-1"></i>Edit</a>
+                                        <a class="dropdown-item" href=@Url.Action("Delete","Store",new {id=item.Id})
+                                           new { onclick="return confirm('Are you sure want to delete?');"><i class="bx bx-trash me-1"></i>Delete</a>
+                                    </div>
+                                </div>
+                            </td>
+                           
+                           
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

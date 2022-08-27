@@ -1,0 +1,67 @@
+﻿@model NewShopNow2.ViewModel.UserAndStore
+@{
+    ViewBag.Title = "UserDetails";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4">Edit User</h4>
+    <hr class="my-0" />
+    <div class="card-body">
+
+        @using (Html.BeginForm("UpdateUserData", "User", FormMethod.Post, new { id = "userForm" }))
+        {
+            @Html.HiddenFor(model => model.objUser.Id)
+            @Html.HiddenFor(model => model.objUser.Password)
+            @Html.HiddenFor(model => model.objUser.CreatedDate)
+            @Html.HiddenFor(model => model.objUser.CreatedBy)
+            <div class="row">
+                <div class="mb-3 col-md-6">
+                    @Html.Label("UserName", "User Name", new { @class = "form-label" })
+                    @Html.EditorFor(model => model.objUser.UserName, new { htmlAttributes = new { @class = "form-control", pattern = @"(?=.*[a-zA-Z][a-zA-Z]).{2,}", @required = "required" } })
+                </div>
+
+                <div class="mb-3 col-md-6">
+                    @Html.Label("EmailId", "Email", new { @class = "form-label" })
+                    @Html.EditorFor(model => model.objUser.EmailId, new { htmlAttributes = new { @class = "form-control", type = "Email", @required = "required" } })
+                </div>
+
+                <div class="mb-3 col-md-6">
+                    @Html.Label("MobileNo", "Mobile No", new { @class = "form-label" })
+                    @Html.EditorFor(model => model.objUser.MobileNo, new { htmlAttributes = new { @class = "form-control", pattern = @"^!*(\d!*){10,}$", @required = "required" } })
+
+                </div>
+
+                <div class="mb-3 col-md-6">
+                    @Html.Label("City", "City", new { @class = "form-label" })
+                    @Html.EditorFor(model => model.objUser.City, new { htmlAttributes = new { @class = "form-control", pattern = @"(?=.*[a-zA-Z][a-zA-Z]).{2,}", @required = "required" } })
+                </div>
+
+                <div class="mb-3 col-md-6">
+                    @Html.Label("Role", "Role", new { @class = "form-label" })
+                    @Html.DropDownListFor(model => model.objUser.RoleId, new List<SelectListItem>
+          {
+                              new SelectListItem() {Text = "Admin", Value="2"},
+                              new SelectListItem() {Text = "Cashier", Value="3"}
+
+          }, "Please select a Role", new { @class = "select2 form-select", required = "required"})
+                </div>
+
+                <div class="mb-3 col-md-6">
+                    @Html.Label("StoreId", "Store Name", new { @class = "form-label" })
+
+                    @Html.DropDownListFor(model => model.objUser.StoreId, new SelectList(Model.lstStore, "Id", "StoreName"), "Please Select",
+                                new { @id = "StoreId", @class = "select2 form-select" })
+                </div>
+
+
+            </div>
+            <div class="mt-2">
+                <button type="submit" class="btn btn-primary me-2">Save changes</button>
+                <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+            </div>
+        }
+    </div>
+
+</div>

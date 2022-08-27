@@ -1,0 +1,69 @@
+﻿@using NewShopNowBL2.Models
+@model List<tblStock>
+@{
+    ViewBag.Title = "ListStock";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="content-wrapper">
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="fw-bold py-3 mb-4">Product List</h4>
+        @Html.ActionLink("Add Product", "AddProduct", "Stock", null, new { @class = "btn btn-primary" })
+        <br /><br />
+        <!-- Basic Bootstrap Table -->
+        <div class="card">
+            <h5 class="card-header">Products</h5>
+            <div class="table-responsive text-nowrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Product ID</th>
+                            <th>Product Name</th>
+                            <th>Quantity</th>
+                            <th>Base Price</th>
+                            <th>Selling Price</th>
+                            <th>Discount</th>
+                            <th>Created By</th>
+
+                            <th>Action</th>
+
+                        </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+
+                        @foreach (var product in Model)
+                        {
+                            <tr>
+                                <td>@product.Id</td>
+                                <td>@product.ProductName</td>
+                                <td>@product.ProductQty</td>
+                                <td>@product.BasePrice</td>
+                                <td>@product.SellingPrice</td>
+                                <td>@product.Discount</td>
+                                <td>@product.CreatedBy</td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                            <i class="bx bx-dots-vertical-rounded"></i>
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <a class="dropdown-item" href=@Url.Action("Details","Stock",new {id=product.Id})><i class="bx bx-edit-alt me-1"></i>Edit</a>
+                                            <a class="dropdown-item" href=@Url.Action("Delete","Stock",new {id=product.Id})
+                                               new { onclick="return confirm('Are you sure want to delete?');"><i class="bx bx-trash me-1"></i>Delete</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

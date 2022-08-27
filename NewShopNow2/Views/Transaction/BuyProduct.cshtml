@@ -1,0 +1,329 @@
+﻿
+@{
+    ViewBag.Title = "BuyProduct";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div id="partialView" ></div>
+<div id="myDiv" class="content-wrapper">
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Transaction /</span> Buy Product</h4>
+        <div class="card mb-4">
+            <div id="div1" class="card-body" style="display: none;">
+
+                <form id="first_form" method="post" action="">
+                    <div class="form-group">
+                        <input class="form-control" type="hidden" id="Pid" />
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label class="form-label" for="name">Product Name :</label>
+                            <input type="text" class="form-control" id="Name" readonly />
+                        </div>
+
+                        <div class="mb-3 col-md-6">
+                            <label class="form-label" for="Price">Selling Price :</label>
+                            <input type="text" class="form-control" id="SellingPrice" readonly />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label class="form-label" for="Discount">Discount :</label>
+                            <input type="number" class="form-control" id="Discount" readonly />
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label class="form-label" for="Quantity">Quantity :</label>
+                            <input type="number" class="form-control" id="Qty" required />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label class="form-label" for="GST">GST :</label>
+                            <input type="text" id="txtGST" class="form-control" placeholder="e.g. 5%" />
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <button type="submit" class="btn btn-primary me-2">Submit</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+        <div id="ListData" class="card">
+            <h5 class="card-header">Product List</h5>
+            <div class="table-responsive text-nowrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Product Name</th>
+                            <th>Selling Price</th>
+                            <th>Discount</th>
+                            <th>Buy Product</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <br /><br />
+        <div class="card">
+            <h5 class="card-header">Selected Product</h5>
+            <div class="table-responsive text-nowrap">
+                <table id="record" class="table">
+                    <thead>
+                        <tr>
+                            <th>Product Id</th>
+                            <th>Product Name</th>
+                            <th>Selling Price</th>
+                            <th>Discount</th>
+                            <th>Quantity</th>
+                            <th>GST</th>
+                            <th>Total</th>
+                            <th>Remove</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="mb-3 col-md-6">
+                <label class="form-label" for="Payment">Choose Payment Method :</label>
+                <select name="Payment" id="PaymentMethod" class="select2 form-select">
+                    <option disabled selected>--select Payment Method--</option>
+                    <option value="Cash">Cash</option>
+                    <option value="Card">Card</option>
+                    <option value="UPI">UPI</option>
+                </select>
+            </div>
+            <div class="mb-3 col-md-6">
+                <label class="form-label" for="Total">Total :</label>
+                <input type="text" id="sum" readonly class="form-control" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="mb-3 col-md-6">
+                <label class="form-label" for="Name">Customer Name:</label>
+                <input type="text" id="txtName" class="form-control" />
+            </div>
+            <div class="mb-3 col-md-6">
+                <label class="form-label" for="MobileNo">Customer Mobile No :</label>
+                <input type="text" id="txtMobileNo" class="form-control" />
+            </div>
+
+
+        </div>
+        <div class="row">
+            <div class="mb-3 col-md-6">
+                <label class="form-label" for="Email">Customer Email:</label>
+                <input type="text" id="txtEmail" class="form-control" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <input type="button" id="btnSave" onclick="SaveTransaction();" value="Make Payment" class="bnt btn-block btn-success" />
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        GetData();
+        $('#first_form').submit(feedTable);
+    });
+
+    var totalDiscount = 0;
+    var totalGST = 0;
+
+    function GetData() {
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("GetAjaxProductList", "Stock")",
+                dataType: 'json',
+                contentType: "application/json;",
+                success: function (data) {
+                    console.log(data);
+                    $('#ListData tbody').empty();
+                    $.each(data.data, function (key, item) {
+                      //  console.log(item);
+
+                        $('#ListData tbody').append(
+                            '<tr><td>' + item.ProductName +
+                            '</td><td>' + item.SellingPrice +
+                            '</td><td>' + item.Discount +
+                            '</td><td onclick="ShowTag(' + item.Id +')"><a href="#">Buy Product</a> ' +
+                            '</td></tr>'
+                        )
+                    });
+
+                }
+            });
+    }
+
+    function calc_total() {
+
+            var sum = 0;
+            $(".total").each(function () {
+                sum += parseFloat($(this).text());
+            });
+        $('#sum').val(sum);
+
+
+    }
+
+    function feedTable(e) {
+        e.preventDefault();
+        if (!this.snNo) this.snNo = 1;
+        var Name = $('#Name').val(),
+            Id = $('#Pid').val(),
+            SPrice = $('#SellingPrice').val(),
+            Discount = $('#Discount').val(),
+            Qty = $('#Qty').val(),
+            GST = $('#txtGST').val(),
+
+            BasicAmt = (SPrice * Qty),
+            discount = BasicAmt * (Discount / 100),
+            gst = (BasicAmt - discount) * (GST / 100),
+            totalAmount = BasicAmt - discount + gst;
+
+            totalDiscount = totalDiscount + discount;
+        totalGST = totalGST + gst;
+
+            $('#record').append(
+                "<tr id='tbUser'><td>" + Id + "</td>" +
+                "<td>" + Name + "</td>" +
+                "<td>" + SPrice + "</td>" +
+                "<td>" + Discount + "</td>" +
+                "<td>" + Qty + "</td>" +
+                "<td>" + GST + "</td>" +
+                "<td class='total'>" + totalAmount + "</td> " +
+                "<td><button type = 'button' id='DeleteButton' onclick='Remove()' > Remove</button > </td ></tr > "
+
+            )
+        this.snNo += 1;
+        calc_total();
+
+        $("#div1").hide();
+        $('#Qty').val("");
+        $('#txtGST').val("");
+        var count = $('#record tr').length-1;
+       // console.log(count);
+    }
+
+    function ShowTag(id) {
+        $("#div1").show();
+        $("#Pid").val(id);
+        $.ajax({
+            type:"POST",
+            url: '@Url.Action("GetProductById","Stock")',
+            data: '{Id: ' + JSON.stringify($("#Pid").val()) + '}',
+            contentType: 'application/json; charset=utf-8',
+            dataType:'json',
+            success: function (result) {
+                console.log(result);
+                $('#Name').val(result.ProductName);
+                $('#BasePrice').val(result.BasePrice);
+                $('#SellingPrice').val(result.SellingPrice);
+                $('#Discount').val(result.Discount);
+                $('#Pid').val(result.Id);
+
+               // GetData();
+            },
+            error: function (result) {
+                console.log(result);
+            }
+        });
+
+    }
+
+    function SaveTransaction() {
+        var count = $('#record tr').length - 1;
+
+        var TItems = new Array();
+        $("#record TBODY TR").each(function () {
+            var row = $(this);
+            var TItem = {};
+            TItem.ProductId = row.find("TD").eq(0).html();
+            TItem.Qty = row.find("TD").eq(4).html();
+            TItem.Price = row.find("TD").eq(6).html();
+            TItems.push(TItem);
+        });
+      //  console.log(TItems);
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SaveTransactions", "Transaction")',
+            data: '{TotalQty: ' + count +
+                ',TotalAmount: ' + JSON.stringify($('#sum').val()) +
+                ',PayMethod: ' + JSON.stringify($('#PaymentMethod').val()) +
+                ',totalDisc: ' + totalDiscount +
+                ',totalgst: ' + totalGST +
+                ',TItems: ' + JSON.stringify(TItems) +
+                ',CustName: ' + JSON.stringify($('#txtName').val()) +
+                ',CustMobile: ' + JSON.stringify($('#txtMobileNo').val()) +
+                ',CustEmail: ' + JSON.stringify($('#txtEmail').val()) +'}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+            success: function (result) {
+           
+                console.log(result)
+                    $('#sum').val("");
+                    $('#PaymentMethod').val("");
+                    $("#txtMobileNo").val("");
+                    $("#txtGST").val("");
+                    $("#record tbody tr").remove();
+                    alert("data saved successfully");
+                    GenerateInvoice(result.InvoiceNo);
+
+                },
+                error: function (result) {
+                    alert(result);
+                }
+            });
+
+    }
+
+    function GenerateInvoice(InvoiceNo) {
+
+       alert(InvoiceNo);
+
+       $.ajax({
+            type:"POST",
+           url: '@Url.Action("BillPreview", "Transaction")',
+           data: '{InvoiceNo: ' + JSON.stringify(InvoiceNo) +
+               ',receiver: ' + JSON.stringify($('#txtEmail').val()) +'}',
+            contentType: 'application/json; charset=utf-8',
+            dataType:'html',
+           success: function (result) {
+               alert('In sucess')
+               $('#myDiv').hide();
+               
+               $("#partialView").html(result);
+            },
+           error: function (result) {
+               alert("in error " + result)
+
+            }
+        });
+    }
+
+    function Remove() {
+      //  alert("here")
+
+        $("#record").on("click", "#DeleteButton", function () {
+            $(this).closest("tr").remove();
+            calc_total();
+        })
+
+
+    }
+
+</script>
+

@@ -1,0 +1,44 @@
+﻿@model NewShopNowBL2.Models.tblStore
+
+@{
+    ViewBag.Title = "AddStore";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4">Product </h4>
+    <hr class="my-0" />
+    <div class="card-body">
+        @using (Html.BeginForm("SaveStore", "Store", null, FormMethod.Post))
+        {
+            @Html.HiddenFor(model => model.Id)
+            <div class="row">
+                <div class="mb-3 col-md-6">
+                    @Html.Label("StoreName", "Store Name", new { @class = "form-label" })
+                    @Html.EditorFor(model => model.StoreName, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+                <div class="mb-3 col-md-6">
+                    @Html.Label("Address", "Address", new { @class = "form-label" })
+                    @Html.EditorFor(model => model.Address, new { htmlAttributes = new { @class = "form-control" } })
+
+                </div>
+                <div class="mb-3 col-md-6">
+                    @Html.Label("City", "City", new { @class = "form-label" })
+                    @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control" } })
+
+                </div>
+                <div class="mb-3 col-md-6">
+                    @Html.Label("ContactNo", "Contact No", new { @class = "form-label" })
+                    @Html.EditorFor(model => model.ContactNo, new { htmlAttributes = new { @class = "form-control",pattern = @"^!*(\d!*){10,}$", } })
+                </div>
+                
+            </div>
+            <div class="mt-2">
+                <button type="submit" class="btn btn-primary me-2">Save </button>
+                <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+            </div>
+        }
+    </div>
+</div>
+
+

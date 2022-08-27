@@ -1,0 +1,142 @@
+﻿@model NewShopNow2.ViewModel.UserAndStore
+
+@{
+    ViewBag.Title = "AddUser";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4">Add User</h4>
+    <hr class="my-0" />
+    <div class="card-body">
+
+        @using (Html.BeginForm("SaveUser", "User", FormMethod.Post, new { id = "userForm" }))
+        {
+            @Html.HiddenFor(model => model.objUser.Id)
+
+            <div class="row">
+                <div class="mb-3 col-md-6">
+                    @Html.Label("UserName", "User Name", new { @class = "form-label" })
+                    @Html.EditorFor(model => model.objUser.UserName, new { htmlAttributes = new { @class = "form-control"} })
+                </div>
+
+                <div class="mb-3 col-md-6">
+                    @Html.Label("EmailId", "Email", new { @class = "form-label" })
+                    @Html.EditorFor(model => model.objUser.EmailId, new { htmlAttributes = new { @class = "form-control", type = "Email", @required = "required" } })
+                </div>
+
+                <div class="mb-3 col-md-6">
+                    @Html.Label("MobileNo", "Mobile No", new { @class = "form-label" })
+                    @Html.EditorFor(model => model.objUser.MobileNo, new { htmlAttributes = new { @class = "form-control", pattern = @"^!*(\d!*){10,}$", @required = "required" } })
+
+                </div>
+
+                <div class="mb-3 col-md-6">
+                    @Html.Label("City", "City", new { @class = "form-label" })
+                    @Html.EditorFor(model => model.objUser.City, new { htmlAttributes = new { @class = "form-control", pattern = @"(?=.*[a-zA-Z][a-zA-Z]).{2,}", @required = "required" } })
+                </div>
+
+                <div class="mb-3 col-md-6">
+                    @Html.Label("Role", "Role", new { @class = "form-label" })
+                    @Html.DropDownListFor(model => model.objUser.RoleId, new List<SelectListItem>
+          {
+                              new SelectListItem() {Text = "Admin", Value="2"},
+                              new SelectListItem() {Text = "Cashier", Value="3"}
+
+          }, "Please select a Role", new { @class = "select2 form-select", required = "required" })
+                </div>
+
+                <div class="mb-3 col-md-6">
+                    @Html.Label("StoreId", "Store Name", new { @class = "form-label" })
+
+                    @Html.DropDownListFor(model => model.objUser.StoreId, new SelectList(Model.lstStore, "Id", "StoreName"), "Please Select",
+                                new { @id = "StoreId", @class = "select2 form-select" })
+                </div>
+                <div class="mb-3 col-md-6 form-password-toggle">
+                    @Html.Label("Password", "Password", new { @class = "form-label" })
+                    <div class="input-group input-group-merge">
+                        @Html.EditorFor(model => model.objUser.Password, new { htmlAttributes = new { @class = "form-control", type = "password", pattern = @"(?=.*\d)(?=.*[^A-Za-z0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}", @required = "required" } })
+                        <span class="input-group-text cursor-pointer" id="basic-default-password">
+                            <i class="bx bx-hide"></i>
+                        </span>
+                    </div>
+                    <small id="passval">
+
+                    </small>
+                </div>
+
+                <div class="mb-3 col-md-6 form-password-toggle">
+                    <label class="form-label">Password</label>
+                    <div class="input-group input-group-merge">
+                        <input type="password"
+                               class="form-control"
+                               id="confirm_password"
+                               pattern="(?=.*\d)(?=.*[^A-Za-z0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                               aria-describedby="basic-default-password" />
+                        <span class="input-group-text cursor-pointer" id="basic-default-password">
+                            <i class="bx bx-hide"></i>
+                        </span>
+
+                    </div>
+                    <small id="output">
+
+                    </small>
+                </div>
+
+
+            </div>
+            <div class="mt-2">
+                <button type="submit" class="btn btn-primary me-2">Save changes</button>
+                <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+            </div>
+        }
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+
+        $("#objUser_Password").change(validatePassword);
+        $("#confirm_password").keyup(validatePassword);
+
+        $('#objUser_Password').keyup(function () {
+            $('#passval').html(passRequirements($('#objUser_Password').val()))
+        })
+    });
+    function validatePassword() {
+        var password = $("#objUser_Password")
+            , confirm_password = $("#confirm_password")
+        if (password.val() != confirm_password.val()) {
+            @* confirm_password[0].setCustomValidity("Passwords do not match!!") *@
+            $('#output').addClass("text-danger");
+            $('#output').text("Password not matched*").show();
+        } else {
+            @* confirm_password[0].setCustomValidity("") *@
+            $('#output').removeClass("text-danger");
+            $('#output').addClass("text-success");
+            $('#output').text("Password matched!!").show();
+        }
+    }
+
+    function passRequirements(password) {
+        $("#passval").addClass("text-danger");
+        if (!(/^(.{8,20}$)/.test(password))) {
+            return 'Password must be between 8 to 20 characters long.';
+        }
+        else if (!(/^(?=.*[A-Z])/.test(password))) {
+            return 'Password must contain at least one uppercase.';
+        }
+        else if (!(/^(?=.*[a-z])/.test(password))) {
+            return 'Password must contain at least one lowercase.';
+        }
+        else if (!(/^(?=.*[0-9])/.test(password))) {
+            return 'Password must contain at least one digit.';
+        }
+        else if (!(/^(?=.*[@@#$%&])/.test(password))) {
+            return "Password must contain special characters.";
+        } else if ((/(?=.*\d)(?=.*[^A-Za-z0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}/.test(password))) {
+            $("#passval").removeClass("text-danger");
+            $("#passval").addClass("text-success");
+            return "Strong Password"
+        }
+    }
+</script>

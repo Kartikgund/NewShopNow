@@ -1,0 +1,111 @@
+﻿@model NewShopNow2.ViewModel.UserAndStore
+
+@{
+    ViewBag.Title = "UserProfile";
+}
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Account Settings /</span> Edit Profile</h4>
+    <h4 class="fw-bold py-3 mb-4">Hello @Session["UserName"]</h4>
+    <div class="card mb-4">
+        <h5 class="card-header">Profile Details</h5>
+        <div class="card-body">
+            <div class="d-flex align-items-start align-items-sm-center gap-4">
+                <img src="../assets/img/avatars/user.png"
+                     alt="user-avatar"
+                     class="d-block rounded"
+                     height="100"
+                     width="100"
+                     id="uploadedAvatar" />
+
+            </div>
+        </div>
+
+        <hr class="my-0" />
+        <div class="card-body">
+
+            @using (Html.BeginForm("UpdateUserData", "User", FormMethod.Post, new { id = "userForm" }))
+            {
+                @Html.HiddenFor(model => model.objUser.Id)
+                @Html.HiddenFor(model => model.objUser.Password)
+                @Html.HiddenFor(model => model.objUser.CreatedDate)
+                @Html.HiddenFor(model => model.objUser.CreatedBy)
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        @Html.Label("UserName", "User Name", new { @class = "form-label" })
+                        @Html.EditorFor(model => model.objUser.UserName, new { htmlAttributes = new { @class = "form-control", pattern = @"(?=.*[a-zA-Z][a-zA-Z]).{2,}", @required = "required" } })
+                    </div>
+
+                    <div class="mb-3 col-md-6">
+                        @Html.Label("EmailId", "Email", new { @class = "form-label" })
+                        @Html.EditorFor(model => model.objUser.EmailId, new { htmlAttributes = new { @class = "form-control", type = "Email", @required = "required", @readonly = "readonly" } })
+                    </div>
+
+                    <div class="mb-3 col-md-6">
+                        @Html.Label("MobileNo", "Mobile No", new { @class = "form-label" })
+                        @Html.EditorFor(model => model.objUser.MobileNo, new { htmlAttributes = new { @class = "form-control", pattern = @"^!*(\d!*){10,}$", @required = "required" } })
+
+                    </div>
+
+                    <div class="mb-3 col-md-6">
+                        @Html.Label("City", "City", new { @class = "form-label" })
+                        @Html.EditorFor(model => model.objUser.City, new { htmlAttributes = new { @class = "form-control", pattern = @"(?=.*[a-zA-Z][a-zA-Z]).{2,}", @required = "required" } })
+                    </div>
+
+                    <div class="mb-3 col-md-6">
+                        @Html.Label("Role", "Role", new { @class = "form-label" })
+                        @Html.DropDownListFor(model => model.objUser.RoleId, new List<SelectListItem>
+              {
+                                  new SelectListItem() {Text = "Admin", Value="2"},
+                                  new SelectListItem() {Text = "Cashier", Value="3"}
+
+              }, "Please select a Role", new { @class = "select2 form-select", required = "required", disabled = true })
+                    </div>
+
+                    <div class="mb-3 col-md-6">
+                        @Html.Label("StoreId", "Store Name", new { @class = "form-label" })
+
+                        @Html.DropDownListFor(model => model.objUser.StoreId, new SelectList(Model.lstStore, "Id", "StoreName"), "Please Select",
+                                    new { @id = "StoreId", @class = "select2 form-select", disabled = true })
+                    </div>
+
+
+                </div>
+                <div class="mt-2">
+                    <button type="submit" class="btn btn-primary me-2">Save changes</button>
+                    <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+                </div>
+            }
+        </div>
+        <!-- /Account -->
+        @*<div class="card">
+                <h5 class="card-header">Delete Account</h5>
+                <div class="card-body">
+                    <div class="mb-3 col-12 mb-0">
+                        <div class="alert alert-warning">
+                            <h6 class="alert-heading fw-bold mb-1">Are you sure you want to delete your account?</h6>
+                            <p class="mb-0">Once you delete your account, there is no going back. Please be certain.</p>
+                        </div>
+                    </div>
+
+                <div class="form-check mb-3">
+                    @Html.HiddenFor(model => model.objUser.Id)
+                    <input class="form-check-input"
+                           type="checkbox"
+                           name="accountActivation"
+                           id="accountActivation" />
+                    <label class="form-check-label" for="accountActivation">I confirm my account deactivation</label>
+                </div>
+                        <button type="button" class="btn btn-danger deactivate-account">Deactivate Account</button>
+
+                    </div>
+            </div>*@
+    </div>
+</div>
+    <script>
+        $('#userForm').on('submit', function () {
+            $('#objUser_RoleId').prop('disabled', false);
+            $('#StoreId').prop('disabled', false);
+        });
+
+    </script>
