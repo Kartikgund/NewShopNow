@@ -19,6 +19,14 @@ namespace NewShopNowBL2.Repository
             using (DPTContext context = new DPTContext())
             {
                 objUser = context.tblUsers.Where(x => x.EmailId == emailId && x.Password == password).FirstOrDefault();
+              
+                    var userRoles = (from role in context.tblRoles
+                                     join user in context.tblUsers
+                                     on role.Id equals user.Id
+                                     where user.EmailId == emailId
+                                     select role.RoleName).ToArray();
+
+
             }
             return objUser;
         }

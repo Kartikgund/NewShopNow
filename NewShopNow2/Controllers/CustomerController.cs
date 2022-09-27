@@ -12,12 +12,15 @@ namespace NewShopNow2.Controllers
     {
         CustomerRepo customerRepo = new CustomerRepo();
         // GET: Customer
+
+        [Authorize(Roles = "Admin, Cashier")]
         public ActionResult ListCustomer()
         {
             var list = customerRepo.getAllCustomers();
             return View(list);
         }
 
+        [Authorize(Roles = "Admin, Cashier")]
         public ActionResult GetCustomerByNumber(string MobileNo)
         {
             tblCustomer customer = customerRepo.getCustomerByMobileNo(MobileNo);

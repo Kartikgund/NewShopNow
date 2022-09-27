@@ -28,13 +28,12 @@ namespace NewShopNowBL2.Repository
                 com.CommandType = CommandType.StoredProcedure;
                 SqlDataAdapter da = new SqlDataAdapter(com);
                 
-                con.Open();
                 da.TableMappings.Add("table1", "tblCustomer");
                 da.TableMappings.Add("table2", "tblStock");
                 da.Fill(dataSet);
                 table1 = dataSet.Tables[0];
                 table2 = dataSet.Tables[1];
-                con.Close();
+
 
                 List<tblCustomer> lstCustomer = new List<tblCustomer>();
                 lstCustomer = (from DataRow dr in table1.Rows
@@ -115,6 +114,27 @@ namespace NewShopNowBL2.Repository
             }
 
             return objCustomer;
+        }
+
+        public bool BulkInsert(DataTable dataTable)
+        {
+            var result = false;
+            string connStr = ConfigurationManager.ConnectionStrings["DPTContext"].ConnectionString;
+            SqlConnection con = new SqlConnection(connStr);
+            SqlBulkCopy objbulk = new SqlBulkCopy(con);
+            //assigning Destination table name      
+            objbulk.DestinationTableName = "tblCustomer";
+            //Mapping Table column      
+            objbulk.ColumnMappings.Add("CustomerName", "CustomerName");
+            objbulk.ColumnMappings.Add("MobileNo", "MobileNo");
+            objbulk.ColumnMappings.Add("CreatedBy", "CreatedBy");
+            objbulk.ColumnMappings.Add("CreatedDate", "CreatedDate");
+            //inserting Datatable Records to DataBase      
+            con.Open();
+            objbulk.WriteToServer(dataTable);
+            result = true;
+            con.Close();
+            return result;
         }
     }
 }

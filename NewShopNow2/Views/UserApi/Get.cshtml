@@ -1,8 +1,6 @@
-﻿@using NewShopNowBL2.Models
-@model List<tblStore>
-
+﻿@model IEnumerable<NewShopNowBL2.Models.tblUser>
 @{
-    ViewBag.Title = "ListStore";
+    ViewBag.Title = "Get";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -11,27 +9,26 @@
     <!-- Content -->
 
     <div class="container-xxl flex-grow-1 container-p-y">
-        <h4 class="fw-bold py-3 mb-4">Store List</h4>
-        @Html.ActionLink("Add Store", "AddStore", "Store", null, new { @class = "btn btn-primary" })
+        <h4 class="fw-bold py-3 mb-4">Cashier List</h4>
+        @Html.ActionLink("Add User", "AddUser", "UserApi", null, new { @class = "btn btn-primary" })
 
-        @Html.ActionLink("Export to Excel", "Export", "Home", new { type = "tblStore" }, new { @class = "btn btn-primary" })
+        @Html.ActionLink("Export to Excel", "Export", "Home", null, new { @class = "btn btn-primary" })
         <br /><br />
         <!-- Basic Bootstrap Table -->
         <div class="card">
-            <h5 class="card-header">Stores</h5>
+            <h5 class="card-header">Cashiers</h5>
             <div class="table-responsive text-nowrap">
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Store ID</th>
-                            <th>Store Name</th>
-                            <th>Address</th>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email ID</th>
+                            <th>Mobile No</th>
                             <th>City</th>
-                            <th>Contact No</th>
-                            <th>Started Date</th>
+                            <th>Store ID</th>
+                            <th>Role Id</th>
                             <th>Created By</th>
-                            <th>Created Date</th>
-
                             <th>Action</th>
 
                         </tr>
@@ -41,28 +38,26 @@
                         @foreach (var item in Model)
                         {
                             <tr>
-                                <td>@item.Id</td>
-                                <td>@item.StoreName</td>
-                                <td>@item.Address</td>
+                                <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>@item.Id</strong></td>
+                                <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>@item.UserName</strong></td>
+                                <td>@item.EmailId</td>
+                                <td>@item.MobileNo</td>
                                 <td>@item.City</td>
-                                <td>@item.ContactNo</td>
-                                <td>@item.StartedDate</td>
+                                <td>@item.StoreId</td>
+                                <td>@item.RoleId</td>
                                 <td>@item.CreatedBy</td>
-                                <td>@item.CreatedDate</td>
                                 <td>
                                     <div class="dropdown">
                                         <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
                                             <i class="bx bx-dots-vertical-rounded"></i>
                                         </button>
                                         <div class="dropdown-menu">
-                                            <a class="dropdown-item" href="/Store/Details/@item.Id"><i class="bx bx-edit-alt me-1"></i>Edit</a>
-                                            <a class="dropdown-item" href=@Url.Action("Delete","Store",new {id=item.Id})
+                                            <a class="dropdown-item" href="/UserApi/UserDetails/@item.Id"><i class="bx bx-edit-alt me-1"></i>Edit</a>
+                                            <a class="dropdown-item" href=@Url.Action("Delete","UserApi",new {id=item.Id})
                                                new { onclick="return confirm('Are you sure want to delete?');"><i class="bx bx-trash me-1"></i>Delete</a>
                                         </div>
                                     </div>
                                 </td>
-
-
                             </tr>
                         }
                     </tbody>
@@ -71,3 +66,4 @@
         </div>
     </div>
 </div>
+

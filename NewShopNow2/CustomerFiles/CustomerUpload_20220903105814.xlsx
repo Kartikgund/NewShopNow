@@ -1,0 +1,114 @@
+BEGIN TRAN
+
+UPDATE tblTransaction
+SET GST=120,
+	TotalDiscount=130
+	WHERE Id=9
+
+	SELECT * FROM tblTransaction WHERE Id=9
+	SELECT @@TRANCOUNT AS OpenTransactions 
+ROLLBACK TRAN
+
+	SELECT * FROM tblTransaction WHERE Id=9
+	SELECT @@TRANCOUNT AS OpenTransactions 
+
+//-------------------------------------------------------------------------------
+
+CREATE PROCEDURE 
+[dbo].[InsertMultipleWithTransaction] 
+@Name nvarchar(50),
+@Mobile_No nvarchar(50),
+@Email nvarchar(50),
+@Password nvarchar(50),
+@DOB date,
+@DOJ date,
+@Designation nvarchar(50),
+@Created_date datetime,
+@Created_by int,
+@Address nvarchar(max),
+@Gender nvarchar(50),
+@Emergency_contact_no nvarchar(50)
+AS
+BEGIN
+ BEGIN TRAN
+              BEGIN TRY
+                     -- Insert into PersonalDetails table first
+                    DECLARE @Empid int 
+					INSERT INTO Employee VALUES (@Name,@Mobile_No,@Email,@Password,@DOB,@DOJ,@Designation,@Created_date,@Created_by)
+
+                    
+                     -- now insert into Accounts table
+                    SET @Empid=@@IDENTITY
+					INSERT INTO Emp_data VALUES (@Empid,@Address,@Gender,@Emergency_contact_no)
+
+                     
+              -- if not error, commit the transcation
+              COMMIT TRANSACTION
+       END TRY
+       BEGIN CATCH
+              -- if error, roll back any chanegs done by any of the sql statements
+			  SELECT ERROR_MESSAGE() AS ErrorMessage;  
+              ROLLBACK TRANSACTION
+       END CATCH
+END
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------
+
+USE [NewDb]
+GO
+
+/****** Object:  StoredProcedure [dbo].[InsertMultipleWithTransaction]    Script Date: 18-08-2022 11:13:11 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE OR ALTER PROCEDURE 
+[dbo].[InsertMultipleWithTransaction] 
+@Name nvarchar(50),
+@Mobile_No nvarchar(50),
+@Email nvarchar(50),
+@Password nvarchar(50),
+@DOB date,
+@DOJ date,
+@Designation nvarchar(50),
+@Created_date datetime,
+@Created_by int,
+@Address nvarchar(max),
+@Gender nvarchar(50),
+@Emergency_contact_no nvarchar(50)
+AS
+BEGIN
+ BEGIN TRAN
+              BEGIN TRY
+                     -- Insert into PersonalDetails table first
+                    DECLARE @Empid int 
+					INSERT INTO Employee VALUES (@Name,@Mobile_No,@Email,@Password,@DOB,@DOJ,@Designation,@Created_date,@Created_by)
+
+                    
+                     -- now insert into Accounts table
+                    SET @Empid=@@IDENTITY
+					INSERT INTO Emp_data VALUES (@Empid,@Address,@Gender,@Emergency_contact_no)
+
+                     
+              -- if not error, commit the transcation
+              COMMIT TRANSACTION
+			  SELECT 'Data Inserted Sucessfully' AS ErrorMessage;
+       END TRY
+       BEGIN CATCH
+              -- if error, roll back any chanegs done by any of the sql statements
+--SELECT ERROR_MESSAGE() Message, ERROR_LINE() Line, ERROR_NUMBER() ErrorNumber,ERROR_PROCEDURE() ErrorProcedure,ERROR_STATE() State,ERROR_SEVERITY() Severity;  
+              
+			  
+			  ROLLBACK TRANSACTION
+			  DECLARE @DBError_Log_ID int
+			  INSERT INTO DBError_Log VALUES (ERROR_NUMBER(),ERROR_STATE(),ERROR_SEVERITY(),ERROR_LINE(),ERROR_PROCEDURE(),ERROR_MESSAGE(),SYSDATETIME())
+			  SET @DBError_Log_ID = @@IDENTITY;
+			  --select @DBError_Log_ID
+			  SELECT * FROM DBError_Log WHERE DBError_Log_ID = @DBError_Log_ID
+       END CATCH
+END
+GO
+
+

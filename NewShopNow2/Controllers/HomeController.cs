@@ -10,6 +10,12 @@ using System.Net.Mail;
 using System.Net;
 using System.Configuration;
 using System.IO;
+using System.Data;
+using System.Data.OleDb;
+using ClosedXML.Excel;
+using System.Threading.Tasks;
+using System.ComponentModel;
+using System.Web.Security;
 
 namespace NewShopNow2.Controllers
 {
@@ -18,6 +24,9 @@ namespace NewShopNow2.Controllers
         LoginRepo repo = new LoginRepo();
         UserRepo UR = new UserRepo();
         StoreRepo SR = new StoreRepo();
+        StockRepo stockRepo = new StockRepo();
+        ErrorLogRepo ER = new ErrorLogRepo();
+        CustomerRepo customerRepo = new CustomerRepo();
 
         public ActionResult Index()
         {
@@ -49,6 +58,7 @@ namespace NewShopNow2.Controllers
             var user = repo.ValidateUser(objUser.EmailId, pass);
             if (user != null)
             {
+                FormsAuthentication.SetAuthCookie(user.EmailId,false);
                 Session["User"] = user;
                 Session["UserName"] = user.UserName;
                 return RedirectToAction("Index", "Home");
@@ -210,6 +220,7 @@ namespace NewShopNow2.Controllers
             return RedirectToAction("Login");
         }
 
+        [Authorize(Roles = "Admin")]
         public ActionResult WriteFile()
         {
             return View();
@@ -233,6 +244,174 @@ namespace NewShopNow2.Controllers
                
             }
             return RedirectToAction("Index");
+        }
+
+        [Authorize(Roles = "Admin, Super Admin")]
+        public ActionResult UploadFile()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult UploadCustomers(string groupId)
+        {
+            if (Request.Files.Count > 0)
+            {
+                try
+                {
+                    DataSet ds = new DataSet();
+                    HttpPostedFileBase files = Request.Files[0];
+                    string fileName = "CustomerUpload_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx";
+                    var path = ConfigurationManager.AppSettings["CustomerDocuments"].ToString();
+                    var fullFilePath = path + "\\" + fileName;
+                    files.SaveAs(path + "\\" + fileName);
+
+                    string conString = string.Empty;
+
+                    conString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + fullFilePath + ";Extended Properties=\"Excel 12.0;HDR=Yes;IMEX=1\"";
+
+                    using (OleDbConnection connExcel = new OleDbConnection(conString))
+                    {
+                        using (OleDbCommand cmdExcel = new OleDbCommand())
+                        {
+                            using (OleDbDataAdapter odaExcel = new OleDbDataAdapter())
+                            {
+                                cmdExcel.Connection = connExcel;
+                                //Get the name of First Sheet.
+                                connExcel.Open();
+                                DataTable dtExcelSchema;
+                                dtExcelSchema = connExcel.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, null);
+                                string sheetName = dtExcelSchema.Rows[0]["TABLE_NAME"].ToString();
+                                connExcel.Close();
+
+                                //Read Data from First Sheet.
+                                connExcel.Open();
+                                cmdExcel.CommandText = "SELECT * From [" + sheetName + "]";
+                                odaExcel.SelectCommand = cmdExcel;
+                                odaExcel.Fill(ds);
+                                connExcel.Close();
+                            }
+                        }
+                    }
+                 /*  ds.Tables[0].Columns.Add("GroupId");
+                    foreach (DataRow dr in ds.Tables[0].Rows)
+                    {
+                        dr["GroupId"] = groupId;
+                    }
+*/
+                    var status = customerRepo.BulkInsert(ds.Tables[0]);
+
+                    return Json("File Uploaded Successfully!");
+                }
+                catch (Exception ex)
+                {
+                    ER.AddException(ex);
+                }
+
+            }
+            return Json("File Not Uploaded Successfully!");
+
+        }
+
+        [Authorize(Roles = "Admin, Super Admin")]
+        public FileResult Export(string type)
+        {
+            
+            DataTable dt = new DataTable("Grid");
+
+            switch (type)
+            {
+                case "tblUser":
+                    {
+                        PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(typeof(tblUser));
+                        foreach (PropertyDescriptor prop in properties)
+                        {
+                            if (!prop.Name.Equals("tblUser"))
+                            {
+                                dt.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
+                                                            
+                            }
+                        }
+
+                        var items = Task.Run(async () => await UR.GetAllUsers()).Result;
+
+                        foreach (var item in items)
+                        {
+                            var values = new object[properties.Count];
+                            for (int i = 0; i < properties.Count; i++)
+                            {
+                                values[i] = properties[i].GetValue(item);
+                            }
+                            dt.Rows.Add(values);
+                        }
+                        break;
+                    }
+
+                case "tblStore":
+                    {
+                        PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(typeof(tblStore));
+                        foreach (PropertyDescriptor prop in properties)
+                        {
+                            if (!prop.Name.Equals("tblStore"))
+                            {
+                                dt.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
+                            }
+                        }
+
+                        var items = SR.GetAllStores();
+
+                        foreach (var item in items)
+                        {
+                            var values = new object[properties.Count];
+                            for (int i = 0; i < properties.Count; i++)
+                            {
+                                values[i] = properties[i].GetValue(item);
+                            }
+                            dt.Rows.Add(values);
+                        }
+                        break;
+                    }
+
+                case "tblStock":
+                    {
+                        PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(typeof(tblStock));
+                        foreach (PropertyDescriptor prop in properties)
+                        {
+                            if (!prop.Name.Equals("tblStock") && !prop.Name.Equals("tblTransactionItems"))
+                            {
+                                dt.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
+                            }
+                        }
+
+                        var items = stockRepo.getAllProduct();
+
+                        foreach (var item in items)
+                        {
+                            var values = new object[dt.Columns.Count];
+                            for (int i = 0; i < properties.Count; i++)
+                            {
+                                if(properties[i].DisplayName != "tblTransactionItems")
+                                {
+                                    values[i] = properties[i].GetValue(item);
+                                }
+                                
+                            }
+                            dt.Rows.Add(values);
+                        }
+                        break;
+                    }
+
+            }
+
+            using (XLWorkbook wb = new XLWorkbook())
+            {
+                wb.Worksheets.Add(dt);
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    wb.SaveAs(stream);
+                    return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", type+".xls");
+                }
+            }
         }
     }
 }

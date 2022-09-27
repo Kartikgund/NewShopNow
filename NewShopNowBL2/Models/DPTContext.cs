@@ -18,6 +18,7 @@ namespace NewShopNowBL2.Models
         public virtual DbSet<tblStore> tblStores { get; set; }
         public virtual DbSet<tblTransaction> tblTransactions { get; set; }
         public virtual DbSet<tblTransactionItem> tblTransactionItems { get; set; }
+        public virtual DbSet<tblRole> tblRoles { get; set; }
         public virtual DbSet<tblUser> tblUsers { get; set; }
         public virtual DbSet<tblLogError> tblLogErrors { get; set; }
 
@@ -34,6 +35,17 @@ namespace NewShopNowBL2.Models
                 .WithRequired(e => e.tblStock)
                 .HasForeignKey(e => e.ProductId)
                 .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<tblRole>()
+                .HasMany(e => e.tblUsers)
+                .WithRequired(e => e.tblRole)
+                .HasForeignKey(e => e.RoleId)
+                .WillCascadeOnDelete(false);
+        }
+
+        internal void BulkInsert(System.Data.DataTable dataTable)
+        {
+            throw new NotImplementedException();
         }
     }
 }

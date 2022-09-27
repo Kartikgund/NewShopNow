@@ -34,5 +34,7 @@ namespace NewShopNowBL2.Models
         public int CreatedBy { get; set; }
 
         public DateTime CreatedDate { get; set; }
+
+        public virtual tblRole tblRole { get; set; }
     }
 }

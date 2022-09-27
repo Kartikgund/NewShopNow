@@ -20,10 +20,14 @@ namespace NewShopNow2.Controllers
         CustomerRepo CR = new CustomerRepo();
         ErrorLogRepo ER = new ErrorLogRepo();
         // GET: Transaction
+
+        [Authorize(Roles = "Cashier")]
         public ActionResult BuyProduct()
         {
             return View();
         }
+
+        [Authorize(Roles = "Cashier")]
         public ActionResult SaveTransactions(string TotalQty, string TotalAmount, string PayMethod, string totalDisc, string totalgst, List<tblTransactionItem> TItems,string CustName,string CustMobile, string custEmail)
         {
             tblTransaction result = new tblTransaction();
@@ -51,23 +55,23 @@ namespace NewShopNow2.Controllers
             }
             catch (Exception ex)
             {
-                string absoluteurl = System.Web.HttpContext.Current.Request.Url.AbsoluteUri;
-                ER.AddException(ex, absoluteurl);
+                ER.AddException(ex);
                 return View("Error");
             }
-        
-
            
+
+
 
         }
 
+        [Authorize(Roles = "Cashier")]
         public ActionResult GetProductById(string Id)
         {
             tblStock stock = SR.FindProductById(Convert.ToInt32(Id));
             return Json(stock, JsonRequestBehavior.AllowGet);
         }
 
-       
+        [Authorize(Roles = "Cashier")]
         public ActionResult BillPreview(string InvoiceNo, string hide, string receiver)
         {
             //InvoiceNo = "6cae7dcfd0e4607b";
@@ -83,6 +87,7 @@ namespace NewShopNow2.Controllers
             return PartialView("_BillPreview", transactionModel);
         }
 
+        [Authorize(Roles = "Cashier")]
         public ActionResult PrintInvoice(string InvoiceNo, string receiver)
         {
             var a = new ViewAsPdf();
@@ -138,8 +143,7 @@ namespace NewShopNow2.Controllers
             }
             catch (Exception ex)
             {
-                string absoluteurl = System.Web.HttpContext.Current.Request.Url.AbsoluteUri;
-                ER.AddException(ex, absoluteurl);
+                ER.AddException(ex);
                 return View("Error");
             }
 

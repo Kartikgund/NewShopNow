@@ -7,6 +7,7 @@ using System.Data.Entity.Migrations;
 using NewShopNowBL2.Models;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.Data.Entity;
 
 namespace NewShopNowBL2.Repository
 {
@@ -56,14 +57,13 @@ namespace NewShopNowBL2.Repository
             return Result;
         }
 
-        public List<tblUser> GetAllUsers()
+        public async Task<List<tblUser>> GetAllUsers()
         {
-
             List<tblUser> lstUsers = new List<tblUser>();
             using (DPTContext context = new DPTContext())
             {
 
-                lstUsers = context.tblUsers.ToList();
+                lstUsers =await context.tblUsers.ToListAsync();
                 return lstUsers;
             }
 

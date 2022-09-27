@@ -1,5 +1,4 @@
-﻿@using NewShopNowBL2.Models
-@model IEnumerable<tblUser>
+﻿@model IEnumerable<NewShopNowBL2.Models.tblUser>
 
 @{
     ViewBag.Title = "ListCashier";
@@ -12,6 +11,8 @@
     <div class="container-xxl flex-grow-1 container-p-y">
         <h4 class="fw-bold py-3 mb-4">Cashier List</h4>
         @Html.ActionLink("Add User", "AddUser", "User",null, new { @class = "btn btn-primary" })
+      
+        @Html.ActionLink("Export to Excel", "Export", "Home", new { type = "tblUser" }, new { @class = "btn btn-primary" })
         <br /><br />
         <!-- Basic Bootstrap Table -->
         <div class="card">
