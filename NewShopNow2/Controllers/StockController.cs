@@ -14,6 +14,16 @@ namespace NewShopNow2.Controllers
         StockRepo stockRepo = new StockRepo();
         // GET: Stock
         [Authorize(Roles = "Admin, Cashier")]
+        public ActionResult GetStockData()
+        {
+
+            var lstProduct = stockRepo.GetStockData();
+            // var jsonlstProduct = JsonConvert.SerializeObject(lstProduct);
+            return Json(lstProduct , JsonRequestBehavior.AllowGet);
+        }
+
+
+        [Authorize(Roles = "Admin, Cashier")]
         public ActionResult ListStock()
         {
             var listStocks = stockRepo.getAllProduct();

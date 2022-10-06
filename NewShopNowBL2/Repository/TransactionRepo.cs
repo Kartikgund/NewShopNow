@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using NewShopNowBL2.Models;
 using System.Data.Entity.Migrations;
 using System.Data.Entity;
+using System.Configuration;
+using System.Data.SqlClient;
 
 namespace NewShopNowBL2.Repository
 {
@@ -13,9 +15,6 @@ namespace NewShopNowBL2.Repository
     {
         StockRepo SR = new StockRepo();
         CustomerRepo custRepo = new CustomerRepo();
-
-
-
         public string GenerateId()
         {
             long i = 1;
@@ -26,7 +25,6 @@ namespace NewShopNowBL2.Repository
             return string.Format("{0:x}", i - DateTime.Now.Ticks);
         }
 
-       
         public tblTransaction SaveTransactions(tblTransaction transaction, List<tblTransactionItem> TItems, tblCustomer objCust)
         {
             // bool Result = false;
@@ -113,6 +111,34 @@ namespace NewShopNowBL2.Repository
 
             }
             return objData;
+        }
+
+        public List<Object> GetAllTransaction()
+        {
+            List<Object> lst = new List<object>();
+            string connStr = ConfigurationManager.ConnectionStrings["DPTContext"].ConnectionString;
+            SqlConnection con = new SqlConnection(connStr);
+            string query = "Select SUM(InvoiceAmount) as InvoiceAmt, DateName(mm,InvoiceDate) as Month from tblTransaction group by DateName(mm,InvoiceDate)";
+
+            SqlCommand cmd = new SqlCommand(query, con);
+            con.Open();
+
+            List<string> amount = new List<string>();
+            List<string> month = new List<string>();
+
+
+            SqlDataReader dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                string name = Convert.ToString(dr["InvoiceAmt"]);
+                string qty = Convert.ToString(dr["Month"]);
+                amount.Add(name);
+                month.Add(qty);
+            }
+            lst.Add(amount);
+            lst.Add(month);
+
+            return lst;
         }
     }
 }

@@ -39,7 +39,7 @@ namespace NewShopNowBL2.Models
 
         public override string[] GetRolesForUser(string EmailId)
         {
-            Console.WriteLine(EmailId);
+            
             using (DPTContext context = new DPTContext())
             {
                 var user = context.tblUsers.FirstOrDefault(x => x.EmailId == EmailId);

@@ -30,6 +30,7 @@ namespace NewShopNow2.Controllers
 
         public ActionResult Index()
         {
+
             return View();
         }
 
@@ -326,7 +327,7 @@ namespace NewShopNow2.Controllers
                         PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(typeof(tblUser));
                         foreach (PropertyDescriptor prop in properties)
                         {
-                            if (!prop.Name.Equals("tblUser"))
+                            if (!prop.Name.Equals("tblUser") && !prop.Name.Equals("tblRole"))
                             {
                                 dt.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
                                                             
@@ -337,10 +338,14 @@ namespace NewShopNow2.Controllers
 
                         foreach (var item in items)
                         {
-                            var values = new object[properties.Count];
+                           /* var values = new object[properties.Count];*/
+                            var values = new object[dt.Columns.Count];
                             for (int i = 0; i < properties.Count; i++)
                             {
-                                values[i] = properties[i].GetValue(item);
+                                if (properties[i].DisplayName != "tblRole")
+                                {
+                                    values[i] = properties[i].GetValue(item);
+                                }
                             }
                             dt.Rows.Add(values);
                         }

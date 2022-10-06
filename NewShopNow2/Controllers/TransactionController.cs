@@ -150,6 +150,13 @@ namespace NewShopNow2.Controllers
             
         }
 
+        public ActionResult GetAllTransactions()
+        {
+
+            var lstTransaction = TR.GetAllTransaction();
+            // var jsonlstProduct = JsonConvert.SerializeObject(lstProduct);
+            return Json(lstTransaction, JsonRequestBehavior.AllowGet);
+        }
         /*public ActionResult Dummy()
         {
             string InvoiceNo = "6cae7dcfd0e4607b";

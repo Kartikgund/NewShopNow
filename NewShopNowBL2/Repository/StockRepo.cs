@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using NewShopNowBL2.Models;
 using System.Data.Entity.Migrations;
+using System.Configuration;
+using System.Data.SqlClient;
 
 namespace NewShopNowBL2.Repository
 {
@@ -61,5 +63,35 @@ namespace NewShopNowBL2.Repository
 
             return true;
         }
+
+        public List<Object> GetStockData()
+        {
+            List<Object> stockdata = new List<Object>();
+            string connStr = ConfigurationManager.ConnectionStrings["DPTContext"].ConnectionString;
+            SqlConnection con = new SqlConnection(connStr);
+            string query = "select ProductName,ProductQty from tblstock";
+
+            SqlCommand cmd = new SqlCommand(query, con);
+            con.Open();
+
+            List<string> pName = new List<string>();
+            List<string> pQty = new List<string>();
+
+            
+            SqlDataReader dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                string name = Convert.ToString(dr["ProductName"]);
+                string qty = Convert.ToString(dr["ProductQty"]);
+                pName.Add(name);
+                pQty.Add(qty);
+            }
+            stockdata.Add(pName);
+            stockdata.Add(pQty);
+
+            return stockdata;
+        }
+
+
     }
 }
