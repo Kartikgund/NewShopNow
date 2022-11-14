@@ -16,6 +16,7 @@ using ClosedXML.Excel;
 using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Web.Security;
+using NewShopNow2.Reports;
 
 namespace NewShopNow2.Controllers
 {
@@ -59,7 +60,7 @@ namespace NewShopNow2.Controllers
             var user = repo.ValidateUser(objUser.EmailId, pass);
             if (user != null)
             {
-                FormsAuthentication.SetAuthCookie(user.EmailId,false);
+                FormsAuthentication.SetAuthCookie(user.EmailId, false);
                 Session["User"] = user;
                 Session["UserName"] = user.UserName;
                 return RedirectToAction("Index", "Home");
@@ -78,7 +79,7 @@ namespace NewShopNow2.Controllers
             return RedirectToAction("Login");
         }
 
-         //Register
+        //Register
         public ActionResult RegisterUser()
         {
             UserAndStore userAndStore = new UserAndStore();
@@ -116,8 +117,8 @@ namespace NewShopNow2.Controllers
         public ActionResult VerifyEmail(string email)
         {
             tblUser user = UR.VerifyEmail(email);
-           
-            bool result=false;
+
+            bool result = false;
             if (user != null)
             {
                 tblOTP objOtp = new tblOTP();
@@ -137,14 +138,14 @@ namespace NewShopNow2.Controllers
                         var receiverEmail = new MailAddress(user.EmailId, "Receiver");
                         var password = "rgpljlpevjrezdpq";
                         var sub = "OTP for Reset Password";
-                        var body = "Dear " + user.UserName +  " <b>" + genRand + "</b> is your One-Time-Password. It is valid for 10 mins.";
+                        var body = "Dear " + user.UserName + " <b>" + genRand + "</b> is your One-Time-Password. It is valid for 10 mins.";
 
                         MailMessage message = new MailMessage();
                         message.To.Add(user.EmailId);// Email-ID of Receiver  
                         message.Subject = sub;// Subject of Email  
                         message.From = senderEmail;// Email-ID of Sender  
                         message.IsBodyHtml = true;
-                       
+
                         message.Body = body;
                         SmtpClient SmtpMail = new SmtpClient();
 
@@ -164,11 +165,11 @@ namespace NewShopNow2.Controllers
                 }
 
             }
-             return Json(user, JsonRequestBehavior.AllowGet);
+            return Json(user, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult VerifyOTP(string email,string otp)
-         {
+        public ActionResult VerifyOTP(string email, string otp)
+        {
             tblOTP objotp = UR.GetObjOtpByEmail(email);
 
             string result = "";
@@ -199,12 +200,12 @@ namespace NewShopNow2.Controllers
             {
                 result = "OTP Already Used";
             }
-           
 
-           
+
+
             return Json(result, JsonRequestBehavior.AllowGet);
         }
-
+          
         public ActionResult ResetPassword(string email)
         {
             tblUser objUser = UR.VerifyEmail(email);
@@ -212,10 +213,10 @@ namespace NewShopNow2.Controllers
             return PartialView("_ResetPassword");
         }
 
-        public ActionResult SavePassword(string email,string password1)
+        public ActionResult SavePassword(string email, string password1)
         {
             tblUser objUser = UR.VerifyEmail(email);
-           
+
             objUser.Password = repo.encrypt(password1);
             UR.AddUser(objUser);
             return RedirectToAction("Login");
@@ -230,11 +231,11 @@ namespace NewShopNow2.Controllers
         public ActionResult SaveFile(string txtfield)
         {
             string folder = ConfigurationManager.AppSettings["Path"].ToString();
-            string path = folder+"LogFile_"+ @Convert.ToDateTime(DateTime.Now).ToString("dd/MM/yyyy")+".txt";
+            string path = folder + "LogFile_" + @Convert.ToDateTime(DateTime.Now).ToString("dd/MM/yyyy") + ".txt";
             if (!System.IO.File.Exists(path))
             {
                 System.IO.File.CreateText(path).Dispose();
-               
+
             }
 
             // This text is always added, making the file longer over time
@@ -242,7 +243,7 @@ namespace NewShopNow2.Controllers
             using (StreamWriter sw = System.IO.File.AppendText(path))
             {
                 sw.WriteLine(txtfield);
-               
+
             }
             return RedirectToAction("Index");
         }
@@ -294,12 +295,12 @@ namespace NewShopNow2.Controllers
                             }
                         }
                     }
-                 /*  ds.Tables[0].Columns.Add("GroupId");
-                    foreach (DataRow dr in ds.Tables[0].Rows)
-                    {
-                        dr["GroupId"] = groupId;
-                    }
-*/
+                    /*  ds.Tables[0].Columns.Add("GroupId");
+                       foreach (DataRow dr in ds.Tables[0].Rows)
+                       {
+                           dr["GroupId"] = groupId;
+                       }
+   */
                     var status = customerRepo.BulkInsert(ds.Tables[0]);
 
                     return Json("File Uploaded Successfully!");
@@ -317,7 +318,7 @@ namespace NewShopNow2.Controllers
         [Authorize(Roles = "Admin, Super Admin")]
         public FileResult Export(string type)
         {
-            
+
             DataTable dt = new DataTable("Grid");
 
             switch (type)
@@ -330,7 +331,7 @@ namespace NewShopNow2.Controllers
                             if (!prop.Name.Equals("tblUser") && !prop.Name.Equals("tblRole"))
                             {
                                 dt.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
-                                                            
+
                             }
                         }
 
@@ -338,7 +339,7 @@ namespace NewShopNow2.Controllers
 
                         foreach (var item in items)
                         {
-                           /* var values = new object[properties.Count];*/
+                            /* var values = new object[properties.Count];*/
                             var values = new object[dt.Columns.Count];
                             for (int i = 0; i < properties.Count; i++)
                             {
@@ -395,11 +396,11 @@ namespace NewShopNow2.Controllers
                             var values = new object[dt.Columns.Count];
                             for (int i = 0; i < properties.Count; i++)
                             {
-                                if(properties[i].DisplayName != "tblTransactionItems")
+                                if (properties[i].DisplayName != "tblTransactionItems")
                                 {
                                     values[i] = properties[i].GetValue(item);
                                 }
-                                
+
                             }
                             dt.Rows.Add(values);
                         }
@@ -414,9 +415,16 @@ namespace NewShopNow2.Controllers
                 using (MemoryStream stream = new MemoryStream())
                 {
                     wb.SaveAs(stream);
-                    return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", type+".xls");
+                    return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", type + ".xls");
                 }
             }
         }
+
+        [Authorize(Roles = "Admin, Super Admin")]
+        public ActionResult Report()
+        {
+            return Redirect("/Reports/UserReport.aspx");
+        }
+
     }
 }

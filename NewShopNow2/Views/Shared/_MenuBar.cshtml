@@ -76,21 +76,27 @@
                         <div data-i18n="Without menu">Customers</div>
                     </a>
                 </li>
-                <li class="menu-item">
-                    <a href="/User/ListCashier" class="menu-link">
-                        <div data-i18n="Without navbar">Cashier</div>
-                    </a>
-                </li>
+                @if (User.IsInRole("Admin"))
+                {
+                    <li class="menu-item">
+                        <a href="/User/ListCashier" class="menu-link">
+                            <div data-i18n="Without navbar">Cashier</div>
+                        </a>
+                    </li>
+                }
                 <li class="menu-item">
                     <a href="/Stock/ListStock" class="menu-link">
                         <div data-i18n="Container">Stock</div>
                     </a>
                 </li>
-                <li class="menu-item">
-                    <a href="/Store/ListStore" class="menu-link">
-                        <div data-i18n="Fluid">Store</div>
-                    </a>
-                </li>
+                @if (User.IsInRole("Admin"))
+                {
+                    <li class="menu-item">
+                        <a href="/Store/ListStore" class="menu-link">
+                            <div data-i18n="Fluid">Store</div>
+                        </a>
+                    </li>
+                }
             </ul>
         </li>
         <!-- Components -->
@@ -102,24 +108,38 @@
                 <div data-i18n="Basic">Buy Product</div>
             </a>
         </li>
-
-        <li class="menu-item">
-            <a href="/Home/WriteFile" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-file"></i>
-                <div data-i18n="Basic">Log file</div>
-            </a>
-        </li>
+        @if (User.IsInRole("Admin"))
+        {
+            <li class="menu-item">
+                <a href="/Home/WriteFile" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-file"></i>
+                    <div data-i18n="Basic">Log file</div>
+                </a>
+            </li>
+        }
         <li class="menu-item">
             <a href="/Student/ListStudent" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-copy"></i>
                 <div data-i18n="Basic">XML Operation</div>
             </a>
         </li>
-        <li class="menu-item">
-            <a href="/Home/UploadFile" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-copy"></i>
-                <div data-i18n="Basic">Upload File</div>
-            </a>
-        </li>
+        @if (User.IsInRole("Admin"))
+        {
+            <li class="menu-item">
+                <a href="/Home/UploadFile" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-copy"></i>
+                    <div data-i18n="Basic">Upload File</div>
+                </a>
+            </li>
+        }
+        @if (User.IsInRole("Admin"))
+        {
+            <li class="menu-item">
+                <a href="/Home/Report" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-copy"></i>
+                    <div data-i18n="Basic">rdlc Report</div>
+                </a>
+            </li>
+        }
     </ul>
 </aside>

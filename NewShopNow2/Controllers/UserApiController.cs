@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace NewShopNow2.Controllers
 {
-    public class UserApiController : Controller
+    public class UserApiController : Controller 
     {
 
         // GET: UserApi
